@@ -28,7 +28,9 @@ async function getAccessToken(code) {
 async function listFiles(token) {
   oAuth2Client.setCredentials(token);
   const drive = google.drive({version: 'v3', auth : oAuth2Client});
-  const res = await drive.files.list({});
+  const res = await drive.files.list({
+    fields: "files(id, name, kind, mimeType, iconLink)"
+  });
   // console.log(res);
   return res.data.files;
 }
