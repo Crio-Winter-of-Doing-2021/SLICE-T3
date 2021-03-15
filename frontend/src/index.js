@@ -8,5 +8,5 @@ ReactDOM.render(
   <>
     <Header />
     <App /> 
-    </>,
+  </>,
     document.getElementById('root'))

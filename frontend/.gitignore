@@ -2,6 +2,8 @@
 
 .env
 
+/src/services/LocalUpload_old.js
+
 # dependencies
 /node_modules
 /.pnp
