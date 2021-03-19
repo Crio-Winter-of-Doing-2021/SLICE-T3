@@ -1,5 +1,7 @@
 require('dotenv').config();
 const sources = require('./routes/sources');
+const destinations = require('./routes/destinations');
+const docTransfer = require('./routes/docTransfer');
 var cors = require('cors');
 const express = require("express");
 
@@ -12,6 +14,8 @@ app.use(express.json());
 
 //routes
 app.use("/source",sources);
+app.use("/destination",destinations);
+app.use("/docTransfer",docTransfer);
 
 //endpoint for testing if server is up
 app.get("/", (req, res) => {

@@ -1,13 +1,13 @@
 const fs = require('fs');
-const readline = require('readline');
 const {google} = require('googleapis');
+
 
 const client_secret = process.env.client_secret;
 const client_id = process.env.client_id;
 const redirect_uris = process.env.redirect_uri;
 
 const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
-const SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly'];
+const SCOPES = ['https://www.googleapis.com/auth/drive.readonly'];
 
 // function to generate auth url
 function authorize() {
@@ -24,7 +24,7 @@ async function getAccessToken(code) {
   return res.tokens;
 }
 
-//fetches a lit of all files on gdrive
+//fetches a list of all files on gdrive
 async function listFiles(token) {
   oAuth2Client.setCredentials(token);
   const drive = google.drive({version: 'v3', auth : oAuth2Client});
@@ -35,8 +35,41 @@ async function listFiles(token) {
   return res.data.files;
 }
 
+
+async function downloadFile(ConfigObject) {
+  oAuth2Client.setCredentials(ConfigObject.token);
+  const drive = google.drive({version: 'v3', auth : oAuth2Client});
+
+  return new Promise((resolve,reject) => {
+      drive.files.get({fileId: ConfigObject.fileId, alt: "media",},{responseType: "stream"}, (err, res) => {
+        if (err) {
+          console.log(err);
+          return reject(err);
+        }
+
+        console.log(res);
+        let buf = [];
+        res.data.on("data", (e) => buf.push(e));
+        res.data.on("end", () => {
+          const buffer = Buffer.concat(buf);
+          console.log(buffer);
+          // fs.writeFileSync('sample.pdf',buffer); // can be used to convert to file
+          return resolve(buffer.toString('base64'));
+        });
+      }
+    );
+
+  });
+
+
+
+}
+
+
+
 module.exports = {
   authorize,
   getAccessToken,
-  listFiles
+  listFiles,
+  downloadFile
 }
