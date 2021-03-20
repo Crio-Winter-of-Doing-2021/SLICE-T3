@@ -1,0 +1,309 @@
+{
+    "swagger": "2.0",
+    "info": {
+       "description": "This is api documentation for slice document library. Team `SLICE - T3`",
+       "version": "1.0.0",
+       "title": "Slice Doc Library - T3"
+    },
+    "host": "localhost:8081",
+    "basePath": "/",
+    "tags": [
+       {
+          "name": "Sources",
+          "description": "Apis for Datasource"
+       },
+       {
+          "name": "Destinations",
+          "description": "Apis for Storage Services"
+       },
+       {
+          "name": "Transfer",
+          "description": "Apis for Transferring file from data source to storage destination"
+       }
+    ],
+    "schemes": [
+       "https",
+       "http"
+    ],
+    "paths": {
+       "/source/gdrive/auth": {
+          "get": {
+             "tags": [
+                "Sources"
+             ],
+             "summary": "Get Google Drive Auth Url",
+             "description": "",
+             "operationId": "gDriveSourceAuth",
+             "produces": [
+                "application/json"
+             ],
+             "responses": {
+                "200": {
+                    "description": "Auth url generated successfully",
+                    "schema": {
+                        "$ref": "#/definitions/gdriveUrl"
+                     }
+                 }
+             }
+          }
+       },
+       "/source/gdrive/oauth2callback": {
+          "get": {
+             "tags": [
+                "Sources"
+             ],
+             "summary": "Returns oauth token from google callback url",
+             "description": "",
+             "operationId": "gDriveSourceAuthCallback",
+             "produces": [
+                "application/json"
+             ],
+             "parameters": [
+                {
+                   "name": "code",
+                   "in": "query",
+                   "description": "Auth Code sent upon gdrive auth",
+                   "required": true,
+                   "type": "string"
+                }
+             ],
+             "responses": {
+                "200": {
+                   "description": "Token generated",
+                   "schema": {
+                       "$ref": "#/definitions/gdriveToken"
+                    }
+                },
+                "500": {
+                   "description": "Internal server error"
+                }
+             }
+          }
+       },
+       "/source/gdrive/listFiles": {
+          "post": {
+             "tags": [
+                "Sources"
+             ],
+             "summary": "Get list of all files in authenticated user's google drive",
+             "description": "",
+             "operationId": "gDriveSourceListFiles",
+             "produces": [
+                "application/json"
+             ],
+             "parameters": [
+                {
+                    "in": "body",
+                    "name": "body",
+                    "description": "GDrive Auth token object",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/gdriveToken"
+                     }
+                }
+             ],
+             "responses": {
+                "200": {
+                   "description": "List of files fetched Successfully",
+                   "schema": {
+                        "$ref": "#/definitions/gdriveFileList"
+                    }
+                }
+             }
+          }
+       },
+       "/destination/s3/listBuckets": {
+          "post": {
+             "tags": [
+                "Destinations"
+             ],
+             "summary": "List all s3 buckets associated with given aws credentials",
+             "description": "",
+             "operationId": "s3StorageListBuckets",
+             "produces": [
+                "application/json"
+             ],
+             "parameters": [
+                {
+                    "in": "body",
+                    "name": "body",
+                    "description": "Aws credentials",
+                    "required": true,
+                    "schema": {
+                        "$ref": "#/definitions/s3Credentials"
+                     }
+                }
+             ],
+             "responses": {
+                "200": {
+                   "description": "List of buckets fetched Successfully",
+                   "schema": {
+                        "$ref": "#/definitions/s3BucketList"
+                    }
+                }
+             }
+          }
+       },
+       "/docTransfer": {
+        "post": {
+           "tags": [
+              "Transfer"
+           ],
+           "summary": "Endpoint to transfer chosen file from a source to destination storage",
+           "description": "",
+           "operationId": "fileTransfer",
+           "produces": [
+              "application/json"
+           ],
+           "parameters": [
+              {
+                  "in": "body",
+                  "name": "body",
+                  "description": "Data source, storage service and upload file specs",
+                  "required": true,
+                  "schema": {
+                      "$ref": "#/definitions/fileTransfer"
+                   }
+              }
+           ],
+           "responses": {
+              "200": {
+                 "description": "File uploaded Successfully",
+                 "schema": {
+                     "$ref": "#/definitions/fileTransferResult"
+                  }
+              }
+           }
+        }
+     }
+    },
+    "definitions": {
+      "gdriveUrl": {
+         "type": "object",
+         "properties": {
+            "authUrl": {
+               "type": "string"
+            },
+            "message": {
+               "type": "string"
+            }
+         }
+      },
+      "gdriveToken": {
+         "type": "object",
+         "properties": {
+            "access_token": {
+               "type": "string"
+            },
+            "refresh_token": {
+               "type": "string"
+            },
+            "scope": {
+               "type": "string"
+            },
+            "token_type": {
+               "type": "string"
+            },
+            "expiry_date": {
+               "type": "number"
+            }
+         }
+      },
+      "gdriveFile": {
+         "type": "object",
+         "properties": {
+            "kind": {
+               "type": "string"
+            },
+            "id": {
+               "type": "string"
+            },
+            "name": {
+               "type": "string"
+            },
+            "mimeType": {
+               "type": "string"
+            },
+            "iconLink": {
+               "type": "string"
+            }
+         }
+      },
+      "gdriveFileList": {
+         "type": "object",
+         "properties": {
+            "files": {
+               "type": "array",
+               "items": {
+                  "$ref": "#/definitions/gdriveFile"
+               }
+            }
+         }
+      },
+      "s3Credentials": {
+         "type" : "object",
+         "properties": {
+            "ACCESS_KEY": {
+               "type": "string"
+            },
+            "SECRET_KEY": {
+               "type": "string"
+            }
+         }
+      },
+      "s3BucketList": {
+         "type": "object",
+         "properties": {
+            "data": {
+               "type": "array",
+               "items": {
+                  "type": "object",
+                  "properties": {
+                     "Name": {
+                        "type": "string"
+                     },
+                     "CreationDate": {
+                        "type": "string"
+                     }
+                  }
+               }
+            }
+         }
+      },
+      "fileTransfer": {
+         "type": "object",
+         "properties": {
+            "sourceConfig": {
+               "type": "object",
+               "properties": {
+                  "name": {
+                     "type": "string"
+                  },
+                  "extendedData": {
+                     "type": "object"
+                     }
+               }
+            },
+            "destinationConfig": {
+               "type": "object",
+               "properties": {
+                  "name": {
+                     "type": "string"
+                  },
+                  "extendedData": {
+                     "type": "object"
+                  }
+               }
+            }
+         }
+      },
+      "fileTransferResult": {
+         "type" : "object",
+         "properties" : {
+            "result" : {
+               "type" : "object"
+            }
+           }
+      }
+    }
+ }
