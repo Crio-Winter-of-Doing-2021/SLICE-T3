@@ -3,7 +3,7 @@
  */
 const express = require("express");
 let router = express.Router();
-const {generateClient,authorize,getAccessToken,listFiles} = require('../../services/data_sources/GoogleDrive');
+const {authorize,getAccessToken,listFiles} = require('../../services/data_sources/GoogleDrive');
 
 router.use(express.json());
 

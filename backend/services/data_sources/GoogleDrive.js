@@ -1,14 +1,6 @@
 const {google} = require('googleapis');
 
-
-// const client_secret = process.env.client_secret;
-// const client_id = process.env.client_id;
-// const redirect_uris = process.env.redirect_uri;
-
-// const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
-const oAuth2Client = new google.auth.OAuth2();
 const SCOPES = ['https://www.googleapis.com/auth/drive.readonly'];
-
 
 // function to generate auth url
 function authorize(oAuth2ClientJSON) {
