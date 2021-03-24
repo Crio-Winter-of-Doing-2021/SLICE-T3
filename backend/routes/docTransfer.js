@@ -12,7 +12,7 @@ router.use(express.json());
 router.post("/", upload.any(), (req,res) => {
 
     // file transfer from form data file
-    if(req.files.length>0){
+    if(typeof req.files !== 'undefined' && req.files.length>0){
         const { sourceConfig , destinationConfig }= JSON.parse(req.body.reqJson);
         const files = req.files;
 
