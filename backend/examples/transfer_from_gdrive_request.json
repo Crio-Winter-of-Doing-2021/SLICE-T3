@@ -1,0 +1,31 @@
+{
+    "sourceConfig": {
+        "name": "GoogleDrive",
+        "extendedData": {
+            "token": {
+                "access_token": "",
+                "refresh_token": "",
+                "scope": "",
+                "token_type": "",
+                "expiry_date": 1616008444537
+            },
+            "fileId": "",
+            "gdriveClientCredentials": {
+                "client_id": "",
+                "client_secret": "",
+                "redirect_uris": ""
+            }
+        }
+    },
+    "destinationConfig": {
+        "name": "AwsS3",
+        "extendedData": {
+            "fileName": "sample3.pdf",
+            "bucketName": "",
+            "credentials": {
+                "ACCESS_KEY": "",
+                "SECRET_KEY": ""
+            }
+        }
+    }
+}

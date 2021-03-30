@@ -1,31 +1,33 @@
-const fs = require('fs');
 const {google} = require('googleapis');
 
-
-const client_secret = process.env.client_secret;
-const client_id = process.env.client_id;
-const redirect_uris = process.env.redirect_uri;
-
-const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
 const SCOPES = ['https://www.googleapis.com/auth/drive.readonly'];
 
 // function to generate auth url
-function authorize() {
-  return oAuth2Client.generateAuthUrl({
+function authorize(oAuth2ClientJSON) {
+  const {client_id, client_secret, redirect_uris} = oAuth2ClientJSON;
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
+
+  const url = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES,
   });
+
+  return url;
 }
 
 // function to generate access token
-async function getAccessToken(code) {
+async function getAccessToken(code,oAuth2ClientJSON) {
+  const {client_id, client_secret, redirect_uris} = oAuth2ClientJSON;
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
   const res = await oAuth2Client.getToken(code);
   console.log(res);
   return res.tokens;
 }
 
 //fetches a list of all files on gdrive
-async function listFiles(token) {
+async function listFiles(token,oAuth2ClientJSON) {
+  const {client_id, client_secret, redirect_uris} = oAuth2ClientJSON;
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
   oAuth2Client.setCredentials(token);
   const drive = google.drive({version: 'v3', auth : oAuth2Client});
   const res = await drive.files.list({
@@ -37,6 +39,10 @@ async function listFiles(token) {
 
 
 async function downloadFile(ConfigObject) {
+
+  const {client_id, client_secret, redirect_uris} = ConfigObject;
+  const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris);
+
   oAuth2Client.setCredentials(ConfigObject.token);
   const drive = google.drive({version: 'v3', auth : oAuth2Client});
 
@@ -60,9 +66,6 @@ async function downloadFile(ConfigObject) {
     );
 
   });
-
-
-
 }
 
 

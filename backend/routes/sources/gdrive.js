@@ -12,19 +12,20 @@ router.get("/",(req, res) => {
     res.status(200).json({message : "gdrive route"});
 });
 
+
 //endpoint to return auth url
-router.get("/auth",(req, res) => {
-    const authUrl = authorize();
+router.post("/auth",(req, res) => {
+    const authUrl = authorize(req.body.gdriveClientCredentials);
     res.status(200).json({
-        authUrl,
+        authUrl : authUrl,
         message : "Auth url generated successfully."
     });
 });
 
 //endpoint which will return token by extracting auth code
-router.get("/oauth2callback",(req, res) => {
+router.post("/oauth2callback",(req, res) => {
     const authCode = req.query.code;
-    getAccessToken(authCode)
+    getAccessToken(authCode,req.body.gdriveClientCredentials)
     .then(accessToken => {
         res.status(200).json(accessToken);
     })
@@ -35,7 +36,7 @@ router.get("/oauth2callback",(req, res) => {
 
 //endpoint to fetch list of all files
 router.post("/listFiles",(req, res) => {
-    listFiles(req.body)
+    listFiles(req.body.token, req.body.gdriveClientCredentials)
     .then(files =>{
         console.log(files);
         res.status(200).json({files});
