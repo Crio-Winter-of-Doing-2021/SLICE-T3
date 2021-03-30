@@ -1,0 +1,16 @@
+{
+    "sourceConfig": {
+        "name": "LocalStorage"
+    },
+    "destinationConfig": {
+        "name": "AwsS3",
+        "extendedData": {
+            "fileName": "sample3.pdf",
+            "bucketName": "",
+            "credentials": {
+                "ACCESS_KEY": "",
+                "SECRET_KEY": ""
+            }
+        }
+    }
+}
