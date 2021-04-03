@@ -1,0 +1,1 @@
+declare module 'slice_doc_library_t3';
