@@ -25,28 +25,14 @@
        }
     ],
     "paths": {
-       "/source/gdrive/auth": {
-          "post": {
+       "/source/digimocker/auth": {
+          "get": {
              "tags": [
                 "Sources"
              ],
-             "summary": "Get Google Drive Auth Url",
+             "summary": "Get Digimocker Auth Url",
              "description": "",
-             "operationId": "gDriveSourceAuth",
-             "requestBody": {
-               "content": {
-                  "application/json": {
-                     "schema": {
-                        "type" : "object",
-                        "properties" : {
-                           "gdriveClientCredentials" : {
-                            "$ref": "#/components/schemas/gdriveClientCredentials"
-                           }
-                        }
-                      }
-                  }
-               }
-            },
+             "operationId": "digimockerSourceAuth",
              "responses": {
                 "200": {
                     "description": "Auth url generated successfully",
@@ -61,30 +47,25 @@
              }
           }
        },
-       "/source/gdrive/oauth2callback": {
+       "/source/digimocker/oauth2callback": {
           "post": {
              "tags": [
                 "Sources"
              ],
-             "summary": "Returns oauth token from google callback url",
+             "summary": "Returns oauth token from digimocker login url",
              "description": "",
-             "operationId": "gDriveSourceAuthCallback",
-             "parameters": [
-                {
-                   "name": "code",
-                   "in": "query",
-                   "description": "Auth Code sent upon gdrive auth",
-                   "required": true
-                }
-             ],
+             "operationId": "digiMockerSourceAuthCallback",
              "requestBody": {
                "content": {
                   "application/json": {
                      "schema": {
                         "type" : "object",
                         "properties" : {
-                           "gdriveClientCredentials" : {
-                            "$ref": "#/components/schemas/gdriveClientCredentials"
+                           "email": {
+                              "type" : "string"
+                           },
+                           "password": {
+                              "type" : "string"
                            }
                         }
                      }
@@ -97,7 +78,7 @@
                      "content" : {
                         "application/json" : {
                            "schema": {
-                              "$ref": "#/components/schemas/gdriveToken"
+                              "$ref": "#/components/schemas/digiMockerToken"
                            }
                         }
                      }
@@ -108,25 +89,28 @@
              }
           }
        },
-       "/source/gdrive/listFiles": {
+       "/source/digimocker/listFiles": {
           "post": {
              "tags": [
                 "Sources"
              ],
-             "summary": "Get list of all files in authenticated user's google drive",
+             "summary": "Get list of all files in authenticated user's digimocker account",
              "description": "",
-             "operationId": "gDriveSourceListFiles",
+             "operationId": "digimockerSourceListFiles",
              "requestBody": {
                "content": {
                   "application/json": {
-                     "schema": {
+                     "schema" : {
                         "type" : "object",
                         "properties" : {
-                           "token" : {
-                            "$ref": "#/components/schemas/gdriveToken"
+                           "email": {
+                              "type" : "string"
                            },
-                           "gdriveClientCredentials" : {
-                            "$ref": "#/components/schemas/gdriveClientCredentials"
+                           "password": {
+                              "type" : "string"
+                           },
+                           "token" : {
+                              "$ref": "#/components/schemas/digiMockerToken"
                            }
                         }
                      }
@@ -139,7 +123,7 @@
                    "content" : {
                      "application/json" : {
                         "schema": {
-                           "$ref": "#/components/schemas/gdriveFileList"
+                           "$ref": "#/components/schemas/digiMockerFileList"
                        }
                      }
                   }
@@ -147,6 +131,129 @@
              }
           }
        },
+
+       "/source/gdrive/auth": {
+         "post": {
+            "tags": [
+               "Sources"
+            ],
+            "summary": "Get Google Drive Auth Url",
+            "description": "",
+            "operationId": "gDriveSourceAuth",
+            "requestBody": {
+              "content": {
+                 "application/json": {
+                    "schema": {
+                       "type" : "object",
+                       "properties" : {
+                          "gdriveClientCredentials" : {
+                           "$ref": "#/components/schemas/gdriveClientCredentials"
+                          }
+                       }
+                     }
+                 }
+              }
+           },
+            "responses": {
+               "200": {
+                   "description": "Auth url generated successfully",
+                   "content" : {
+                       "application/json" : {
+                          "schema": {
+                             "$ref": "#/components/schemas/gdriveUrl"
+                          }
+                       }
+                   }
+                }
+            }
+         }
+      },
+      "/source/gdrive/oauth2callback": {
+         "post": {
+            "tags": [
+               "Sources"
+            ],
+            "summary": "Returns oauth token from google callback url",
+            "description": "",
+            "operationId": "gDriveSourceAuthCallback",
+            "parameters": [
+               {
+                  "name": "code",
+                  "in": "query",
+                  "description": "Auth Code sent upon gdrive auth",
+                  "required": true
+               }
+            ],
+            "requestBody": {
+              "content": {
+                 "application/json": {
+                    "schema": {
+                       "type" : "object",
+                       "properties" : {
+                          "gdriveClientCredentials" : {
+                           "$ref": "#/components/schemas/gdriveClientCredentials"
+                          }
+                       }
+                    }
+                 }
+              }
+           },
+            "responses": {
+               "200": {
+                    "description": "Token generated",
+                    "content" : {
+                       "application/json" : {
+                          "schema": {
+                             "$ref": "#/components/schemas/gdriveToken"
+                          }
+                       }
+                    }
+               },
+               "500": {
+                  "description": "Internal server error"
+               }
+            }
+         }
+      },
+      "/source/gdrive/listFiles": {
+         "post": {
+            "tags": [
+               "Sources"
+            ],
+            "summary": "Get list of all files in authenticated user's google drive",
+            "description": "",
+            "operationId": "gDriveSourceListFiles",
+            "requestBody": {
+              "content": {
+                 "application/json": {
+                    "schema": {
+                       "type" : "object",
+                       "properties" : {
+                          "token" : {
+                           "$ref": "#/components/schemas/gdriveToken"
+                          },
+                          "gdriveClientCredentials" : {
+                           "$ref": "#/components/schemas/gdriveClientCredentials"
+                          }
+                       }
+                    }
+                 }
+              }
+           },
+            "responses": {
+               "200": {
+                  "description": "List of files fetched Successfully",
+                  "content" : {
+                    "application/json" : {
+                       "schema": {
+                          "$ref": "#/components/schemas/gdriveFileList"
+                      }
+                    }
+                 }
+               }
+            }
+         }
+      },
        "/destination/s3/listBuckets": {
           "post": {
              "tags": [
@@ -320,6 +427,51 @@
                            "type": "string"
                         }
                      }
+                  }
+               }
+            }
+         },
+         "digiMockerToken": {
+            "type": "object",
+            "properties": {
+               "access_token": {
+                  "type": "string"
+               }
+            }
+         },
+         "digimockerFile": {
+            "type": "object",
+            "properties": {
+               "exported": {
+                  "type": "string"
+               },
+               "_id": {
+                  "type": "string"
+               },
+               "name": {
+                  "type": "string"
+               },
+               "email": {
+                  "type": "string"
+               },
+               "url": {
+                  "type": "string"
+               },
+               "identifier": {
+                  "type": "string"
+               },
+               "__v": {
+                  "type": "integer"
+               }
+            }
+         },
+         "digiMockerFileList": {
+            "type": "object",
+            "properties": {
+               "files": {
+                  "type": "array",
+                  "items": {
+                     "$ref": "#/components/schemas/digimockerFile"
                   }
                }
             }
