@@ -1,5 +1,4 @@
 import * as React from "react";
-import { spacing } from '@material-ui/system';
 import {
   AppBar,
   Toolbar,
@@ -11,7 +10,6 @@ import {
 } from "@material-ui/core";
 import { Home } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
-import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles({
   navbarDisplayFlex: {

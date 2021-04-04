@@ -1,35 +1,150 @@
-import React, { useState, useEffect} from 'react'
-import ListSelectedFiles from '../ListFiles'
-
+import React, { useState } from 'react'
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
+import { useForm } from 'react-hook-form';
 import axios from 'axios'
+import ListSelectedFiles from './ListFiles'
+var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
+
+
 const baseUrl = 'http://localhost:5000/api'
 
 const DigiMocker = () => {
-    // const [files, setFiles] = useState([])
 
-    // var request = require('request');
-    // var options = {
-    //   'method': 'GET',
-    //   'url': 'http://localhost:5000/api/docs',
-    //   'headers': {
-    //     'auth-token': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2MDUxZWUxYTg2MGFiNTVlZTJjYjFiNGMiLCJpYXQiOjE2MTU5ODIxNzl9.q-tugWik7dHo_M8LjnM6-cAI3DuoeShkMiEDBlvsxLo',
-    //     'Content-Type': 'application/json'
-    //   },
-    // //   body: JSON.stringify({"email":"thuggy@gmail.com"})
+    const [isAuthenticated, setAuthenticated] = useState(false)
+    const [fileList, setFileList] = useState({})
+
+    const { register, handleSubmit, setValue } = useForm()
+
+    const useStyles = makeStyles((theme) => ({
+        paper: {
+            marginTop: theme.spacing(2),
+            display: 'flex',
+            flexDirection: 'column',
+        },
+        submit: {
+            margin: theme.spacing(3, 0, 2),
+        },
+    }));
+
+    let apiInstance = new SliceDocLibraryT3.SourcesApi();
     
-    // };
-    // request(options, function (error, response) {
-    //   if (error) throw new Error(error);
-    //   console.log(response.body);
-    // });
-    
-    return (
-        <div>
-            <ul>
-                <ListSelectedFiles />
-            </ul>
-        </div>
-    )
+    const onSubmit = async (data) => {
+        
+        let creds = {
+            "email": data.email,
+            "password": data.password
+        };
+
+        let loginOpts = {
+            'inlineObject': creds // InlineObject | 
+        };
+
+        async function getDigiMockerToken(){
+            return new Promise((resolve,reject) => {
+                apiInstance.digiMockerSourceAuthCallback(loginOpts, (error, data, response) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(data)
+                    }
+                });  
+            });
+        }
+
+        let authToken = await getDigiMockerToken()
+        .then(data=>data)
+        .catch(error=>console.log("Error:", error))
+        
+        console.log("Token:", authToken)
+
+        let credsAndToken = {
+            "email": "test@user.com",
+            "password": "12346789",
+            "token": authToken
+        };
+        
+        let listFilesOpts = {
+            'inlineObject1': credsAndToken // InlineObject1 | 
+          };
+
+        console.log(listFilesOpts)
+
+        async function getFilesList(){
+            return new Promise((resolve,reject) => {
+                apiInstance.digimockerSourceListFiles(listFilesOpts, (error, data, response) => {
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(data)
+                    }
+                });  
+            });
+        }
+
+        let tempFilesList = await getFilesList()
+        .then(data=>data.files)
+        .catch(error=>console.log("Error:", error))
+
+        setFileList(tempFilesList)
+        console.log("Files:", tempFilesList)
+
+        if (tempFilesList){
+            setAuthenticated(true)
+        }   
+    }
+
+    function SignIn() {
+        const classes = useStyles();
+
+        return (
+            <Container component="main" maxWidth="xs">
+                <CssBaseline />
+                <div className={classes.paper}>
+                    <form className={classes.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            inputRef={register}
+                        />
+                        <TextField
+                            variant="outlined"
+                            margin="normal"
+                            required
+                            fullWidth
+                            name="password"
+                            label="Password"
+                            type="password"
+                            id="password"
+                            inputRef={register}
+                        />
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="contained"
+                            
+                            color="primary"
+                            className={classes.submit}
+                        >
+                            Sign In
+                        </Button>
+                    </form>
+                </div>
+            </Container>
+        );
+    }
+
+    const finalValue = isAuthenticated ? <ListSelectedFiles rows={fileList}/>: <SignIn />
+
+    return finalValue
 }
 
 export default DigiMocker

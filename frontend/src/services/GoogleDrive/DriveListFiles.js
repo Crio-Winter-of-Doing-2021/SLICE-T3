@@ -14,18 +14,11 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
 
-import axios from 'axios';
+var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
 require('dotenv').config()
 
-function createData(name, size, identifier, date) {
-  return { name, size, identifier, date };
-}
 
 function descendingComparator(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -149,7 +142,7 @@ const ListSelectedFilesToolbar = (props) => {
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
           Selected Files
-        </Typography>
+        </Typography> 
       )}
 
     </Toolbar>
@@ -161,6 +154,17 @@ ListSelectedFilesToolbar.propTypes = {
 };
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },  
   root: {
     width: '100%',
   },
@@ -184,6 +188,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+
 export default function ListSelectedFiles({ rows, authToken }) {
   // console.log('Rows: ',rows)
   const classes = useStyles();
@@ -193,13 +198,13 @@ export default function ListSelectedFiles({ rows, authToken }) {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
-
-
+ 
   function transferSelectedFiles(idName) {
     console.log('Inside transfer function')
     const fileId = idName.split(":")[0]
     const fileName = idName.split(":")[1]
     console.log('Id:', fileId, "Name:", fileName)
+
     var transferData = {
       "sourceConfig": {
         "name": "GoogleDrive",
@@ -212,7 +217,7 @@ export default function ListSelectedFiles({ rows, authToken }) {
         "name": "AwsS3",
         "extendedData": {
           "fileName": fileName,
-          "bucketName": "slice-aws-bucket",
+          "bucketName": "slice-aws-bucket", //To be asked from user via dropdown showing existing buckets
           "credentials": {
             "ACCESS_KEY": process.env.REACT_AWS_ACCESS_KEY,
             "SECRET_KEY": process.env.REACT_AWS_SECRET_KEY
@@ -221,35 +226,24 @@ export default function ListSelectedFiles({ rows, authToken }) {
       }
     }
 
-    let config = {
-      method: 'post',
-      url: 'http://localhost:8081/docTransfer/',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      data: transferData
-    };
-
-    axios(config)
-      .then((response) => {
-        console.log('File transfer response: ', JSON.stringify(response.data));
-        setSelected([])
+    // Calls to lib
+    let apiInstance = new SliceDocLibraryT3.TransferApi();
+    let fileTransfer = transferData 
+    apiInstance.fileTransfer(fileTransfer, (error, data, response) => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log('API called successfully. Transfered data ' + JSON.stringify(data));
         window.alert(`${fileName} transferred successfully!`)
-      })
-      .catch((error) => {
-        console.log('File transfer error', error);
-        window.alert(`${fileName} transferred failed!`)
-      });
-
+        setSelected([])
+      }
+    });
   }
 
   const onUploadButtonClick = () => {
     console.log('Button clicked')
     console.log('Selected files: ', selected)
     selected.map((idName) => transferSelectedFiles(idName))
-
-    // selected.map((fileId)=><TransferSelectedFiles fileId={fileId} authToken={authToken} />)    
-    // selected.map((fileId)=>console.log(fileId))
   }
 
   const handleRequestSort = (event, property) => {
@@ -268,8 +262,6 @@ export default function ListSelectedFiles({ rows, authToken }) {
   };
 
   const handleClick = (event, id, name) => {
-    // const idName = 
-    // `${id}:${name}`
     const selectedIndex = selected.indexOf(`${id}:${name}`);
     let newSelected = [];
 
@@ -376,10 +368,6 @@ export default function ListSelectedFiles({ rows, authToken }) {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
       <Button pb={5} onClick={onUploadButtonClick} variant="contained" color="primary" component="label">
         Transfer files
       </Button>
