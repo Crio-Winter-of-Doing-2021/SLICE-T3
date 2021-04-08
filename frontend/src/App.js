@@ -8,7 +8,6 @@ import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 
 import LocalUpload from './services/LocalUpload'
-import DropboxUpload from './services/DropboxUpload'
 import DigiMocker from './services/DigiMocker/DigiMocker'
 import DriveUpload from './services/GoogleDrive/GoogleDrive'
 function TabPanel(props) {
@@ -58,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function SourceStorage() {
     const classes = useStyles();
-    const [value, setValue] = React.useState(1);
+    const [value, setValue] = React.useState(0);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -76,8 +75,7 @@ export default function SourceStorage() {
             >
                 <Tab label="Local Storage"  {...a11yProps(0)} />
                 <Tab label="Google Drive"  {...a11yProps(1)} />
-                <Tab label="Dropbox"  {...a11yProps(2)} />
-                <Tab label="DigiMocker"  {...a11yProps(3)} />
+                <Tab label="DigiMocker"  {...a11yProps(2)} />
             </Tabs>        
             <TabPanel value={value} index={0}>
                 <LocalUpload />
@@ -88,11 +86,6 @@ export default function SourceStorage() {
                 </Box>
             </TabPanel>
             <TabPanel value={value} index={2}>
-            <div className="container">
-                <DropboxUpload />
-            </div>
-            </TabPanel>
-            <TabPanel value={value} index={3}>
                 <Box color="text.primary" borderColor="primary.main">
                     <DigiMocker />
                 </Box>

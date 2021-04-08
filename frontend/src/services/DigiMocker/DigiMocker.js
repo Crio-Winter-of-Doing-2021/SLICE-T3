@@ -5,12 +5,8 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
-import axios from 'axios'
 import ListSelectedFiles from './ListFiles'
 var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
-
-
-const baseUrl = 'http://localhost:5000/api'
 
 const DigiMocker = () => {
 

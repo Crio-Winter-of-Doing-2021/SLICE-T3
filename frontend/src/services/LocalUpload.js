@@ -3,27 +3,25 @@ import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button';
 import {useState} from 'react';
 import axios from 'axios';
-import { ErrorOutlineTwoTone } from '@material-ui/icons';
-
-import {useDropzone} from 'react-dropzone';
 require('dotenv').config()
 
 var FormData = require('form-data');
-var fs = require('fs');
-
 const FileUpload=()=>{
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFile, setSelectedFiles] = useState([]);
 
     const onChangeHandler=event=>{
-        console.log(event.target.files[0])
-        setSelectedFile(event.target.files[0])
+        console.log(event.target.files)
+        setSelectedFiles(event.target.files)
     }
 
     const onClickHandler=()=>{
+
+        for (let i = 0; i < selectedFile.length; i++) {
+
         var data = new FormData();
-        console.log("File name:", selectedFile.name)
-        let fileName = String(selectedFile.name)
-        data.append('files', selectedFile);
+        console.log("File name:", selectedFile[i].name)
+        let fileName = selectedFile[i].name
+        data.append('files', selectedFile[i]);
         data.append('reqJson', '{\n    "sourceConfig": {\n        "name": "LocalStorage"\n    },\n    "destinationConfig": {\n        "name": "AwsS3",\n        "extendedData": {\n            "fileName": "fileName",\n            "bucketName": "slice-aws-bucket",\n            "credentials": {\n   "ACCESS_KEY": "AKIA57SBI3SBWSUJK4FO",\n                "SECRET_KEY": "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"\n            }\n        }\n    }\n}');
        
         axios({
@@ -34,19 +32,22 @@ const FileUpload=()=>{
         })
         .then(function (response) {
             console.log(response);
-            window.alert(`${selectedFile.name} transferred successfully!`)
+            window.alert(`${selectedFile[i].name} transferred successfully!`);
+            setSelectedFiles(null)
         })
         .catch(function (response) {
             console.log('Error: ',response);
         });
+
+    }
     }
 
     return (
-        <Container>
+        <Container maxWidth='sm'>
             <form method="post" action="#" id="#">
-                <div class="form-group files">
+                <div class="form-group files"  style={{ width: "500px" }}>
                     <label>Upload Your File </label>
-                    <input type="file" name="file" onChange={onChangeHandler} class="form-control" multiple=""/>
+                    <input type="file" name="file" onChange={onChangeHandler} class="form-control" style={{width:"500px"}} multiple/>
                     <Button pt={2} onClick={onClickHandler} variant="contained" color="primary" component="label">
                         Submit
                     </Button>

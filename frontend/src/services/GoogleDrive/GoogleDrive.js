@@ -5,7 +5,8 @@ import TextField from '@material-ui/core/TextField';
 import ListSelectedFiles from './DriveListFiles'
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+
 // var SliceDocLibraryT3 = require('../../../node_modules/slice_doc_library_t3/dist/index');
 var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
 require('dotenv').config()
@@ -57,6 +58,9 @@ const DriveUpload = () => {
             window.open(data.authUrl)
         }
         });
+        // var token = Cookies.get('token')
+        // setTokenValue(token)
+        // console.log(token)
     }
 
     const handleTokenChange = (event) => {
@@ -142,7 +146,14 @@ const DriveUpload = () => {
         const classes = useStyles();    
         return (
             <>
-                <Container component="main" maxWidth="xs">
+                <Grid
+                    container
+                    // spacing={0}
+                    direction="column"
+                    alignItems="center"
+                    justify="center"
+                    // style={{ minHeight: '100vh', minWidth: '100vh' }}
+                    >
                     <CssBaseline />
                     <div className={classes.paper}>
                         <form className={classes.form} onSubmit={onTokenSubmit} noValidate>
@@ -168,11 +179,41 @@ const DriveUpload = () => {
                             </Button>
                         </form>
                     </div>
-                </Container>
+                    <Button pb={5} fullWidth onClick={onButtonPress} variant="contained" color="secondary" component="label">
+                        Get Token
+                    </Button>
+                </Grid>
+                {/* <Container component="main" maxWidth="xs">
+                    <CssBaseline />
+                    <div className={classes.paper}>
+                        <form className={classes.form} onSubmit={onTokenSubmit} noValidate>
+                            <TextField
+                                variant="outlined"
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="token"
+                                label="Enter Token"
+                                name="token"
+                                onChange={handleTokenChange}
+                            />
+                            <Button
+                                type="submit"
+                                fullWidth
+                                variant="contained"
+                                color="primary"
+                                onClick={onTokenSubmit}
+                                className={classes.submit}
+                            >
+                                Sign In
+                            </Button>
+                        </form>
+                    </div>
+                </Container> */}
             
-                <Button pb={5} fullWidth onClick={onButtonPress} variant="contained" color="secondary" component="label">
+                {/* <Button pb={5} fullWidth onClick={onButtonPress} variant="contained" color="secondary" component="label">
                     Get Token
-                </Button>
+                </Button> */}
             </>
         )
     }
