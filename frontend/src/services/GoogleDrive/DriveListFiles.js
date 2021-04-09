@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -15,6 +15,12 @@ import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@material-ui/core/Select';
+
 
 var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
 require('dotenv').config()
@@ -198,7 +204,71 @@ export default function ListSelectedFiles({ rows, authToken }) {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
- 
+  const [bucketName, setBucketName] = React.useState('None Selected');
+  const [bucketList, setBucketList] = React.useState([])
+
+  let apiInstance = new SliceDocLibraryT3.DestinationsApi();
+  useEffect(()=>{
+    let s3Creds = {
+      "ACCESS_KEY": process.env.REACT_AWS_ACCESS_KEY,
+      "SECRET_KEY": process.env.REACT_AWS_SECRET_KEY
+    }
+    let listOpts = {
+      's3Credentials': s3Creds // S3Credentials | 
+    };
+
+    async function getBucketList(){
+      return new Promise((resolve,reject) => {
+        apiInstance.s3StorageListBuckets(listOpts, (error, data, response) => {
+              if (error) {
+                  reject(error);
+              } else {
+                  resolve(data)
+              }
+          });  
+      });
+    }
+    let tempBucketList = []
+
+    getBucketList()
+    .then(data=>data['data'].forEach(bucket=>tempBucketList.push(bucket['Name'])))
+    .catch(error=>console.log("Error:", error))
+
+    console.log("Obtained buckets: ", tempBucketList)
+    setBucketList(tempBucketList)
+    }, [])
+
+    function SimpleSelect() {
+      const classes = useStyles();
+
+      const handleChange = (event) => {
+        setBucketName(event.target.value)
+      };
+
+      return (
+        <div>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Bucket</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              onChange={handleChange}
+              value={bucketName}
+            >
+              <MenuItem value={bucketList}>{bucketList}</MenuItem>
+              {/* {
+                bucketList.map(bucket=>(
+                  <MenuItem value={bucket}>
+                    {bucket}
+                  </MenuItem>
+                ))
+              } */}
+            </Select>
+          </FormControl>
+        </div>
+      )
+    }
+
   function transferSelectedFiles(idName) {
     console.log('Inside transfer function')
     const fileId = idName.split(":")[0]
@@ -217,7 +287,7 @@ export default function ListSelectedFiles({ rows, authToken }) {
         "name": "AwsS3",
         "extendedData": {
           "fileName": fileName,
-          "bucketName": "slice-aws-bucket", //To be asked from user via dropdown showing existing buckets
+          "bucketName": bucketName[0], //To be asked from user via dropdown showing existing buckets
           "credentials": {
             "ACCESS_KEY": process.env.REACT_AWS_ACCESS_KEY,
             "SECRET_KEY": process.env.REACT_AWS_SECRET_KEY
@@ -226,6 +296,7 @@ export default function ListSelectedFiles({ rows, authToken }) {
       }
     }
 
+    console.log(transferData)
     // Calls to lib
     let apiInstance = new SliceDocLibraryT3.TransferApi();
     let fileTransfer = transferData 
@@ -368,6 +439,7 @@ export default function ListSelectedFiles({ rows, authToken }) {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
+      <SimpleSelect />
       <Button pb={5} onClick={onUploadButtonClick} variant="contained" color="primary" component="label">
         Transfer files
       </Button>
