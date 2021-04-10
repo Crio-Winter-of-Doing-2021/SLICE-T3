@@ -6,6 +6,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
 import ListSelectedFiles from './ListFiles'
+import Typography from '@material-ui/core/Typography';
 var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
 
 const DigiMocker = () => {
@@ -99,6 +100,12 @@ const DigiMocker = () => {
         return (
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
+                <Typography component="h1" variant="h4">
+                    Sign in
+                </Typography>
+                <Typography component="h4" subtitle2="h6">
+                    DigiMocker
+                </Typography>
                 <div className={classes.paper}>
                     <form className={classes.form} onSubmit={handleSubmit(onSubmit)} noValidate>
                         <TextField

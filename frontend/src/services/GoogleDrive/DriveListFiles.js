@@ -56,7 +56,7 @@ function stableSort(array, comparator) {
 
 const headCells = [
   { id: 'name', numeric: false, disablePadding: true, label: 'File name' },
-  { id: 'identifier', numeric: true, disablePadding: false, label: 'Identifier' },
+  // { id: 'identifier', numeric: true, disablePadding: false, label: 'Identifier' },
 ];
 
 function ListSelectedFilesHead(props) {
@@ -79,7 +79,7 @@ function ListSelectedFilesHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align='left'
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -149,7 +149,7 @@ const ListSelectedFilesToolbar = (props) => {
         </Typography>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Selected Files
+          Select Files
         </Typography> 
       )}
 
@@ -415,7 +415,7 @@ export default function ListSelectedFiles({ rows, authToken }) {
                       <TableCell component="th" id={labelId} scope="row" padding="none">
                         {row.name}
                       </TableCell>
-                      <TableCell align="right">{row.id}</TableCell>
+                      {/* <TableCell align="right">{row.id}</TableCell> */}
 
                     </TableRow>
                   );
@@ -439,18 +439,13 @@ export default function ListSelectedFiles({ rows, authToken }) {
         />
       </Paper>
       <Grid container spacing={3}>
-            {/* Chart */}
             <Grid item xs={12} md={8} lg={6}>
-              {/* <Paper> */}
                 <SimpleSelect />
-              {/* </Paper> */}
             </Grid>
             <Grid item xs={12} md={4} lg={6}>
-              {/* <Paper> */}
               <Button p={5} onClick={onUploadButtonClick} variant="contained" color="primary">
                 Transfer files
               </Button>
-            {/* </Paper> */}
           </Grid>
       </Grid>
       {/* <Grid xs={6} md={4} lg={4}
