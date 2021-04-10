@@ -6,10 +6,12 @@ import PropTypes from 'prop-types';
 
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
 
 import LocalUpload from './services/LocalUpload'
 import DigiMocker from './services/DigiMocker/DigiMocker'
 import DriveUpload from './services/GoogleDrive/GoogleDrive'
+import Paper from '@material-ui/core/Paper';
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
     
@@ -22,9 +24,20 @@ function TabPanel(props) {
         {...other}
         >
             {value === index && (
-                <Box p={3}>
-                    <Typography>{children}</Typography>
-                </Box>
+                <Grid
+                container
+                spacing={0}
+                direction="column"
+                alignItems="center"
+                justify="center"
+                style={{ minHeight: '80vh', minWidth: '150vh' }}
+              >
+                <Paper >
+                    <Box justifyContent="center" p={5}>
+                        <Typography align="center" >{children}</Typography>
+                    </Box>
+                </Paper>
+            </Grid>
             )}
         </div>
     );

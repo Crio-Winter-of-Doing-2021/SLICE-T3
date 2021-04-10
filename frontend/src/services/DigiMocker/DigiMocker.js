@@ -19,7 +19,7 @@ const DigiMocker = () => {
         paper: {
             marginTop: theme.spacing(2),
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
         },
         submit: {
             margin: theme.spacing(3, 0, 2),
