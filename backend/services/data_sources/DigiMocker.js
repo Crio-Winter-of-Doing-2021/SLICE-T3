@@ -36,21 +36,31 @@ async function getAccessToken(data) {
 
 }
 
-//fetches a list of all files on digimocker
 async function listFiles(data) {
+
+  console.log(data);
+  var config = {
+    method: 'post',
+    url: 'https://digimocker.herokuapp.com/api/docs',
+    headers: { 
+      'Content-Type': 'application/json',
+      'auth-token': data['auth-token']
+    },
+    data : JSON.stringify({"email":data['email']})
+  };
+
+  console.log(config);
+
   return new Promise((resolve,reject) => {
-    unirest('GET', 'https://digimocker.herokuapp.com/api/docs/')
-      .headers({
-        'auth-token': data.token.access_token,
-        'Content-Type': 'application/json'
-      })
-      //.send(JSON.stringify({"email":"sampleemail@gmail.com"}))
-      .send(JSON.stringify(data))
-      .end(function (res) { 
-        if (res.error) return reject(res.error); 
-        console.log(res.raw_body);
-        return resolve(res.body);
-      });
+    axios(config)
+    .then(function (response) {
+      console.log(response.data);
+      return resolve({ file_list : response.data});
+    })
+    .catch(function (error) {
+      console.log(error);
+      return reject(error);
+    });
   });
 }
 

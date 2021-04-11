@@ -2,6 +2,8 @@ import { useState} from 'react'
 import ListSelectedFiles from './DriveListFiles'
 import Grid from '@material-ui/core/Grid';
 import { GoogleLogin } from 'react-google-login';
+import Button from '@material-ui/core/Button';
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
 // var SliceDocLibraryT3 = require('../../../node_modules/slice_doc_library_t3/dist/index');
 var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
@@ -54,25 +56,39 @@ const DriveUpload = () => {
     
     const responseGoogle = async (response) => {
         console.log(response['tokenObj']);
-        let outputTokenObj = response['tokenObj']
-        setOAuthOutput(response['tokenObj'])
-        onTokenSubmit(outputTokenObj)
+        if (response['tokenObj']){
+            let outputTokenObj = response['tokenObj']
+            setOAuthOutput(response['tokenObj'])
+            onTokenSubmit(outputTokenObj)
+        }
     }
 
     const EnterToken = () => { 
         return (
             <>
                 <Grid
-                    xs={12} md={4} lg={3}
+                    xs={12} md={4} lg={12}
                     container
                     direction="column"
-                    alignItems="center"
                     justify="center"
-
+                    alighItems="center"
                     >
                     <GoogleLogin
                         clientId={process.env.REACT_APP_DRIVE_SECRET_ID}
                         buttonText="Login"
+                        render={renderProps => (
+                        <Grid container>
+                            <AccountCircleIcon fontSize="large" color='primary'/>
+                            <Button size='large' 
+                                    outlinedSizeLarge={true} 
+                                    variant="contained" 
+                                    color="primary" 
+                                    onClick={renderProps.onClick} 
+                                    disabled={renderProps.disabled}>
+                                Click to Authenticate via Google
+                            </Button>
+                        </Grid>
+                        )}
                         onSuccess={responseGoogle}
                         onFailure={responseGoogle}
                         cookiePolicy={'single_host_origin'}
