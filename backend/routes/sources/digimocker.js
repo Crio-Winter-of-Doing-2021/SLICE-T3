@@ -13,7 +13,7 @@
  });
  
  //endpoint to return auth url
- router.post("/auth",(req, res) => {
+ router.get("/auth",(req, res) => {
      const authUrl = authorize();
      res.status(200).json({
          authUrl,
