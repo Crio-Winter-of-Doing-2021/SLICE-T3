@@ -107,7 +107,7 @@ const FileUpload = () => {
             var data = new FormData();
             console.log("File name:", selectedFile['files'][i].name)
             let fileName = selectedFile['files'][i].name
-            let selectedBucket = bucketName
+            let selectedBucket = bucketName[0]
             data.append('files', selectedFile['files'][i]);
             data.append('reqJson', '{\n    "sourceConfig": {\n        "name": "LocalStorage"\n    },\n    "destinationConfig": {\n        "name": "AwsS3",\n        "extendedData": {\n            "fileName": "fileName",\n            "bucketName": "slice-aws-bucket",\n            "credentials": {\n   "ACCESS_KEY": "AKIA57SBI3SBWSUJK4FO",\n                "SECRET_KEY": "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"\n            }\n        }\n    }\n}');
             console.log(data)
@@ -119,7 +119,7 @@ const FileUpload = () => {
             })
                 .then(function (response) {
                     console.log(response);
-                    window.alert(`${selectedFile['files'][i].name} transferred successfully!`);
+                    window.alert(`${fileName} transferred successfully!`);
                     setSelectedFiles(null)
                 })
                 .catch(function (response) {
