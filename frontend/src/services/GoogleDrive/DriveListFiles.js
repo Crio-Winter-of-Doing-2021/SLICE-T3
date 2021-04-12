@@ -317,6 +317,9 @@ export default function ListSelectedFiles({ rows, authToken }) {
   const onUploadButtonClick = () => {
     console.log('Button clicked')
     console.log('Selected files: ', selected)
+    if (selected.length===0){
+      window.alert('Select Files to transfer!')
+    }
     selected.map((idName) => transferSelectedFiles(idName))
   }
 
@@ -448,20 +451,6 @@ export default function ListSelectedFiles({ rows, authToken }) {
               </Button>
           </Grid>
       </Grid>
-      {/* <Grid xs={6} md={4} lg={4}
-          direction="row"
-          alignItems="center"
-          justify="center">
-      <SimpleSelect />
-      </Grid>
-      <Grid xs={6} md={4} lg={4}
-          direction="row"
-          alignItems="center"
-          justify="center">
-      <Button pb={5} onClick={onUploadButtonClick} variant="contained" color="primary" component="label">
-        Transfer files
-      </Button>
-      </Grid> */}
     </div>
   );
 }

@@ -5,7 +5,6 @@ import { GoogleLogin } from 'react-google-login';
 import Button from '@material-ui/core/Button';
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
-// var SliceDocLibraryT3 = require('../../../node_modules/slice_doc_library_t3/dist/index');
 var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
 require('dotenv').config()
 

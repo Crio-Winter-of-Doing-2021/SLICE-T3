@@ -80,47 +80,7 @@ const DigiMocker = () => {
 
         if (tempFilesList){
             setAuthenticated(true)
-        }   
-        // }
-        // let tempFilesList = await getFilesList()
-        // .then(data=>data.files)
-        // .catch(error=>console.log("Error:", error))
-
-        // setFileList(tempFilesList)
-        // console.log("Files:", tempFilesList)
-
-        // if (tempFilesList){
-        //     setAuthenticated(true)
-        // }   
-
-        // let listFilesOpts = {
-        //     'inlineObject1': credsAndToken // InlineObject1 | 
-        //   };
-
-        // console.log(listFilesOpts)
-
-        // async function getFilesList(){
-        //     return new Promise((resolve,reject) => {
-        //         apiInstance.digimockerSourceListFiles(listFilesOpts, (error, data, response) => {
-        //             if (error) {
-        //                 reject(error);
-        //             } else {
-        //                 resolve(data)
-        //             }
-        //         });  
-        //     });
-        // }
-
-        // let tempFilesList = await getFilesList()
-        // .then(data=>data.files)
-        // .catch(error=>console.log("Error:", error))
-
-        // setFileList(tempFilesList)
-        // console.log("Files:", tempFilesList)
-
-        // if (tempFilesList){
-        //     setAuthenticated(true)
-        // }   
+        }      
     }
 
     function SignIn() {
