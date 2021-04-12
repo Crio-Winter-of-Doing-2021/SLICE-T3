@@ -6,6 +6,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import { useForm } from 'react-hook-form';
 import ListSelectedFiles from './ListFiles'
+import Typography from '@material-ui/core/Typography';
+import axios from 'axios'
 var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
 
 const DigiMocker = () => {
@@ -19,7 +21,7 @@ const DigiMocker = () => {
         paper: {
             marginTop: theme.spacing(2),
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
         },
         submit: {
             margin: theme.spacing(3, 0, 2),
@@ -57,40 +59,28 @@ const DigiMocker = () => {
         
         console.log("Token:", authToken)
 
-        let credsAndToken = {
-            "email": "test@user.com",
-            "password": "12346789",
-            "token": authToken
+        let config = {
+            method: 'post',
+            url: 'http://localhost:8081/source/digimocker/listFiles',
+            headers: { 
+                'Content-Type': 'application/json'
+            },
+            data : { 
+                'email':data.email,
+                'auth-token': authToken['access_token'], 
+            }
         };
-        
-        let listFilesOpts = {
-            'inlineObject1': credsAndToken // InlineObject1 | 
-          };
+        console.log('Sending..:',config)
+        let tempFilesList = await axios(config)
+            .then(data=>data['data']['files']['file_list'])
+            .catch(error=>console.log("Error:", error))
 
-        console.log(listFilesOpts)
-
-        async function getFilesList(){
-            return new Promise((resolve,reject) => {
-                apiInstance.digimockerSourceListFiles(listFilesOpts, (error, data, response) => {
-                    if (error) {
-                        reject(error);
-                    } else {
-                        resolve(data)
-                    }
-                });  
-            });
-        }
-
-        let tempFilesList = await getFilesList()
-        .then(data=>data.files)
-        .catch(error=>console.log("Error:", error))
-
-        setFileList(tempFilesList)
         console.log("Files:", tempFilesList)
+        setFileList(tempFilesList)
 
         if (tempFilesList){
             setAuthenticated(true)
-        }   
+        }      
     }
 
     function SignIn() {
@@ -99,6 +89,12 @@ const DigiMocker = () => {
         return (
             <Container component="main" maxWidth="xs">
                 <CssBaseline />
+                <Typography component="h1" variant="h4">
+                    Sign in
+                </Typography>
+                <Typography component="h4" subtitle2="h6">
+                    DigiMocker
+                </Typography>
                 <div className={classes.paper}>
                     <form className={classes.form} onSubmit={handleSubmit(onSubmit)} noValidate>
                         <TextField
@@ -126,7 +122,6 @@ const DigiMocker = () => {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            
                             color="primary"
                             className={classes.submit}
                         >

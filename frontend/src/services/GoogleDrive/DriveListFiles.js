@@ -16,10 +16,12 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
+
+import Grid from '@material-ui/core/Grid';
+
 
 
 var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
@@ -54,7 +56,7 @@ function stableSort(array, comparator) {
 
 const headCells = [
   { id: 'name', numeric: false, disablePadding: true, label: 'File name' },
-  { id: 'identifier', numeric: true, disablePadding: false, label: 'Identifier' },
+  // { id: 'identifier', numeric: true, disablePadding: false, label: 'Identifier' },
 ];
 
 function ListSelectedFilesHead(props) {
@@ -77,7 +79,7 @@ function ListSelectedFilesHead(props) {
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
-            align={headCell.numeric ? 'right' : 'left'}
+            align='left'
             padding={headCell.disablePadding ? 'none' : 'default'}
             sortDirection={orderBy === headCell.id ? order : false}
           >
@@ -147,7 +149,7 @@ const ListSelectedFilesToolbar = (props) => {
         </Typography>
       ) : (
         <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Selected Files
+          Select Files
         </Typography> 
       )}
 
@@ -202,7 +204,7 @@ export default function ListSelectedFiles({ rows, authToken }) {
   const [orderBy, setOrderBy] = React.useState('name');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
+  
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
   const [bucketName, setBucketName] = React.useState('None Selected');
   const [bucketList, setBucketList] = React.useState([])
@@ -305,6 +307,7 @@ export default function ListSelectedFiles({ rows, authToken }) {
         console.error(error);
       } else {
         console.log('API called successfully. Transfered data ' + JSON.stringify(data));
+        
         window.alert(`${fileName} transferred successfully!`)
         setSelected([])
       }
@@ -314,6 +317,9 @@ export default function ListSelectedFiles({ rows, authToken }) {
   const onUploadButtonClick = () => {
     console.log('Button clicked')
     console.log('Selected files: ', selected)
+    if (selected.length===0){
+      window.alert('Select Files to transfer!')
+    }
     selected.map((idName) => transferSelectedFiles(idName))
   }
 
@@ -362,10 +368,6 @@ export default function ListSelectedFiles({ rows, authToken }) {
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
-
   const isSelected = (id_name) => selected.indexOf(id_name) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
@@ -378,7 +380,7 @@ export default function ListSelectedFiles({ rows, authToken }) {
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='medium'
             aria-label="list selected files"
           >
             <ListSelectedFilesHead
@@ -416,13 +418,13 @@ export default function ListSelectedFiles({ rows, authToken }) {
                       <TableCell component="th" id={labelId} scope="row" padding="none">
                         {row.name}
                       </TableCell>
-                      <TableCell align="right">{row.id}</TableCell>
+                      {/* <TableCell align="right">{row.id}</TableCell> */}
 
                     </TableRow>
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                <TableRow style={{ height: 53 * emptyRows }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
@@ -439,10 +441,16 @@ export default function ListSelectedFiles({ rows, authToken }) {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <SimpleSelect />
-      <Button pb={5} onClick={onUploadButtonClick} variant="contained" color="primary" component="label">
-        Transfer files
-      </Button>
+      <Grid container spacing={3}>
+            <Grid item xs={12} md={8} lg={6}>
+                <SimpleSelect />
+            </Grid>
+            <Grid item xs={12} md={4} lg={6}>
+              <Button p={5} onClick={onUploadButtonClick} variant="contained" color="primary">
+                Transfer files
+              </Button>
+          </Grid>
+      </Grid>
     </div>
   );
 }

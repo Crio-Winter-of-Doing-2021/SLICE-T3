@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -14,12 +14,16 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import Button from '@material-ui/core/Button';
-import axios from 'axios';
-var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
 
+import Grid from '@material-ui/core/Grid';
+
+
+var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
 require('dotenv').config()
 
 function descendingComparator(a, b, orderBy) {
@@ -156,6 +160,17 @@ ListSelectedFilesToolbar.propTypes = {
 };
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
+  },
+  selectEmpty: {
+    marginTop: theme.spacing(2),
+  },  
   root: {
     width: '100%',
   },
@@ -180,14 +195,78 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function ListSelectedFiles({ rows}) {
-  // console.log('Rows: ',rows)
   const classes = useStyles();
   const [order, setOrder] = React.useState('asc');
   const [orderBy, setOrderBy] = React.useState('name');
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
+
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
+
+  const [bucketName, setBucketName] = React.useState('None Selected');
+  const [bucketList, setBucketList] = React.useState([])
+
+  let apiInstance = new SliceDocLibraryT3.DestinationsApi();
+  useEffect(()=>{
+    let s3Creds = {
+      "ACCESS_KEY": process.env.REACT_AWS_ACCESS_KEY,
+      "SECRET_KEY": process.env.REACT_AWS_SECRET_KEY
+    }
+    let listOpts = {
+      's3Credentials': s3Creds // S3Credentials | 
+    };
+
+    async function getBucketList(){
+      return new Promise((resolve,reject) => {
+        apiInstance.s3StorageListBuckets(listOpts, (error, data, response) => {
+              if (error) {
+                  reject(error);
+              } else {
+                  resolve(data)
+              }
+          });  
+      });
+    }
+    let tempBucketList = []
+
+    getBucketList()
+    .then(data=>data['data'].forEach(bucket=>tempBucketList.push(bucket['Name'])))
+    .catch(error=>console.log("Error:", error))
+
+    console.log("Obtained buckets: ", tempBucketList)
+    setBucketList(tempBucketList)
+    }, [])
+
+    function SimpleSelect() {
+      const classes = useStyles();
+
+      const handleChange = (event) => {
+        setBucketName(event.target.value)
+      };
+
+      return (
+        <div>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Bucket</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              onChange={handleChange}
+              value={bucketName}
+            >
+              <MenuItem value={bucketList}>{bucketList}</MenuItem>
+              {/* {
+                bucketList.map(bucket=>(
+                  <MenuItem value={bucket}>
+                    {bucket}
+                  </MenuItem>
+                ))
+              } */}
+            </Select>
+          </FormControl>
+        </div>
+      )
+    }
 
 
   function transferSelectedFiles(urlName) {
@@ -208,7 +287,7 @@ export default function ListSelectedFiles({ rows}) {
         "name": "AwsS3",
         "extendedData": {
           "fileName": fileName,
-          "bucketName": "slice-aws-bucket",
+          "bucketName": bucketName[0],
           "credentials": {
             "ACCESS_KEY": process.env.REACT_AWS_ACCESS_KEY,
             "SECRET_KEY": process.env.REACT_AWS_SECRET_KEY
@@ -217,6 +296,7 @@ export default function ListSelectedFiles({ rows}) {
       }
     }
 
+    console.log(transferData)
     let apiInstance = new SliceDocLibraryT3.TransferApi();
     let fileTransfer = transferData 
     apiInstance.fileTransfer(fileTransfer, (error, data, response) => {
@@ -229,12 +309,14 @@ export default function ListSelectedFiles({ rows}) {
         setSelected([])
       }
     });
-
   }
 
   const onUploadButtonClick = () => {
     console.log('Button clicked')
     console.log('Selected files: ', selected)
+    if (selected.length===0){
+      window.alert('Select Files to transfer!')
+    }
     selected.map((urlName) => transferSelectedFiles(urlName))
 
   }
@@ -255,8 +337,6 @@ export default function ListSelectedFiles({ rows}) {
   };
 
   const handleClick = (event, url, name) => {
-    // const idName = 
-    // `${id}:${name}`
     const selectedIndex = selected.indexOf(`${url}::${name}`);
     let newSelected = [];
 
@@ -286,10 +366,6 @@ export default function ListSelectedFiles({ rows}) {
     setPage(0);
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
-
   const isSelected = (url_name) => selected.indexOf(url_name) !== -1;
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
@@ -302,7 +378,7 @@ export default function ListSelectedFiles({ rows}) {
           <Table
             className={classes.table}
             aria-labelledby="tableTitle"
-            size={dense ? 'small' : 'medium'}
+            size='medium'
             aria-label="list selected files"
           >
             <ListSelectedFilesHead
@@ -346,7 +422,7 @@ export default function ListSelectedFiles({ rows}) {
                   );
                 })}
               {emptyRows > 0 && (
-                <TableRow style={{ height: (dense ? 33 : 53) * emptyRows }}>
+                <TableRow style={{ height: 53 * emptyRows }}>
                   <TableCell colSpan={6} />
                 </TableRow>
               )}
@@ -363,13 +439,16 @@ export default function ListSelectedFiles({ rows}) {
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
-        control={<Switch checked={dense} onChange={handleChangeDense} />}
-        label="Dense padding"
-      />
-      <Button pb={5} onClick={onUploadButtonClick} variant="contained" color="primary" component="label">
-        Transfer files
-      </Button>
+      <Grid container spacing={3}>
+            <Grid item xs={12} md={8} lg={6}>
+                <SimpleSelect />
+            </Grid>
+            <Grid item xs={12} md={4} lg={6}>
+              <Button p={5} onClick={onUploadButtonClick} variant="contained" color="primary">
+                Transfer files
+              </Button>
+          </Grid>
+      </Grid>
     </div>
   );
 }

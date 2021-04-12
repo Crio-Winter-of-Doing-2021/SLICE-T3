@@ -1,95 +1,158 @@
 import React from 'react';
 import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button';
-import {useState} from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { FilePond } from 'react-filepond';
+
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import Grid from '@material-ui/core/Grid';
+import 'filepond/dist/filepond.min.css';
+
+var SliceDocLibraryT3 = require('slice_doc_library_t3/dist/index')
 require('dotenv').config()
 
+const useStyles = makeStyles((theme) => ({
+    container: {
+      display: 'flex',
+      flexWrap: 'wrap',
+    },
+    formControl: {
+      margin: theme.spacing(1),
+      minWidth: 120,
+    },
+    selectEmpty: {
+      marginTop: theme.spacing(2),
+    },  
+  }));
+  
+
 var FormData = require('form-data');
-const FileUpload=()=>{
+const FileUpload = () => {
     const [selectedFile, setSelectedFiles] = useState([]);
 
-    const onChangeHandler=event=>{
-        console.log(event.target.files)
-        setSelectedFiles(event.target.files)
-    }
+    const [bucketName, setBucketName] = React.useState('None Selected');
+    const [bucketList, setBucketList] = React.useState([])
 
-    const onClickHandler=()=>{
+    let apiInstance = new SliceDocLibraryT3.DestinationsApi();
+    useEffect(()=>{
+        let s3Creds = {
+        "ACCESS_KEY": process.env.REACT_AWS_ACCESS_KEY,
+        "SECRET_KEY": process.env.REACT_AWS_SECRET_KEY
+        }
+        let listOpts = {
+        's3Credentials': s3Creds // S3Credentials | 
+        };
 
-        for (let i = 0; i < selectedFile.length; i++) {
-
-        var data = new FormData();
-        console.log("File name:", selectedFile[i].name)
-        let fileName = selectedFile[i].name
-        data.append('files', selectedFile[i]);
-        data.append('reqJson', '{\n    "sourceConfig": {\n        "name": "LocalStorage"\n    },\n    "destinationConfig": {\n        "name": "AwsS3",\n        "extendedData": {\n            "fileName": "fileName",\n            "bucketName": "slice-aws-bucket",\n            "credentials": {\n   "ACCESS_KEY": "AKIA57SBI3SBWSUJK4FO",\n                "SECRET_KEY": "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"\n            }\n        }\n    }\n}');
-       
-        axios({
-            method: "post",
-            url: "http://localhost:8081/docTransfer",
-            data: data,
-            headers: { "Content-Type": "multipart/form-data" },
-        })
-        .then(function (response) {
-            console.log(response);
-            window.alert(`${selectedFile[i].name} transferred successfully!`);
-            setSelectedFiles(null)
-        })
-        .catch(function (response) {
-            console.log('Error: ',response);
+        async function getBucketList(){
+        return new Promise((resolve,reject) => {
+            apiInstance.s3StorageListBuckets(listOpts, (error, data, response) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    resolve(data)
+                }
+            });  
         });
+        }
+        let tempBucketList = []
 
+        getBucketList()
+        .then(data=>data['data'].forEach(bucket=>tempBucketList.push(bucket['Name'])))
+        .catch(error=>console.log("Error:", error))
+
+        console.log("Obtained buckets: ", tempBucketList)
+        setBucketList(tempBucketList)
+    }, [])
+
+    function SimpleSelect() {
+      const classes = useStyles();
+
+      const handleChange = (event) => {
+        event.preventDefault()
+        setBucketName(event.target.value)
+      };
+
+      return (
+        <div>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="demo-simple-select-label">Bucket</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              onChange={handleChange}
+              value={bucketName}
+            >
+              <MenuItem value={bucketList}>{bucketList}</MenuItem>
+              
+            </Select>
+          </FormControl>
+        </div>
+      )
     }
+
+
+
+    const onClickHandler = () => {
+        if (selectedFile.length===0){
+            window.alert('Select Files to transfer!')
+          }
+        console.log(selectedFile['files'])
+        for (let i = 0; i < selectedFile['files'].length; i++) {
+            console.log("Inside loop")
+            var data = new FormData();
+            console.log("File name:", selectedFile['files'][i].name)
+            let fileName = selectedFile['files'][i].name
+            let selectedBucket = bucketName
+            data.append('files', selectedFile['files'][i]);
+            data.append('reqJson', '{\n    "sourceConfig": {\n        "name": "LocalStorage"\n    },\n    "destinationConfig": {\n        "name": "AwsS3",\n        "extendedData": {\n            "fileName": "fileName",\n            "bucketName": "slice-aws-bucket",\n            "credentials": {\n   "ACCESS_KEY": "AKIA57SBI3SBWSUJK4FO",\n                "SECRET_KEY": "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"\n            }\n        }\n    }\n}');
+            console.log(data)
+            axios({
+                method: "post",
+                url: "http://localhost:8081/docTransfer",
+                data: data,
+                headers: { "Content-Type": "multipart/form-data" },
+            })
+                .then(function (response) {
+                    console.log(response);
+                    window.alert(`${selectedFile['files'][i].name} transferred successfully!`);
+                    setSelectedFiles(null)
+                })
+                .catch(function (response) {
+                    console.log('Error: ', response);
+                });
+
+        }
     }
 
     return (
         <Container maxWidth='sm'>
-            <form method="post" action="#" id="#">
-                <div class="form-group files"  style={{ width: "500px" }}>
-                    <label>Upload Your File </label>
-                    <input type="file" name="file" onChange={onChangeHandler} class="form-control" style={{width:"500px"}} multiple/>
-                    <Button pt={2} onClick={onClickHandler} variant="contained" color="primary" component="label">
-                        Submit
-                    </Button>
-                </div>
-            </form>
+            <div class="form-group" style={{ width: "500px" }}>
+                <form method="post" action="#" id="#">
+                    <FilePond allowMultiple={true}
+                        files={selectedFile}
+                        onupdatefiles={fileItems => {
+                            setSelectedFiles({
+                                files: fileItems.map(fileItem => fileItem.file)
+                        });
+                    }} />
+                    <Grid container direction="row" spacing={3}>
+                        <Grid item xs={12} md={8} lg={6}>
+                            <SimpleSelect />
+                        </Grid>
+                        <Grid item xs={12} md={4} lg={6}>
+                            <Button onClick={onClickHandler} variant="contained" color="primary">
+                                Transfer files
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </form>
+            </div>
         </Container>
     )
 }
 export default FileUpload
-
-
-
-
-
-// function FileUpload(props) {
-//   const {getRootProps, getInputProps, open, acceptedFiles} = useDropzone({
-//     // Disable click and keydown behavior
-//     noClick: true,
-//     noKeyboard: true
-//   });
-
-//   const files = acceptedFiles.map(file => (
-//     <li key={file.path}>
-//       {file.path} - {file.size} bytes
-//     </li>
-//   ));
-
-//   return (
-//     <Container maxWidth>
-//       <div {...getRootProps({className: 'dropzone'})}>
-//         <input {...getInputProps()} />
-//         <p>Drag 'n' drop some files here</p>
-//         <button type="button" onClick={open}>
-//           Open File Dialog
-//         </button>
-//       </div>
-//       <aside>
-//         <h4>Files</h4>
-//         <ul>{files}</ul>
-//       </aside>
-//     </Container>
-//   );
-// }
-
-// export default FileUpload

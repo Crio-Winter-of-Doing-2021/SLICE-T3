@@ -3,9 +3,6 @@ import {
   AppBar,
   Toolbar,
   IconButton,
-  List,
-  ListItem,
-  ListItemText,
   Container
 } from "@material-ui/core";
 import { Home } from "@material-ui/icons";
@@ -27,11 +24,6 @@ const useStyles = makeStyles({
   }
 });
 
-const navLinks = [
-  { title: `about us`, path: `/about-us` },
-  { title: `contact`, path: `/contact` },
-];
-
 const Header = () => {
   const classes = useStyles();
 
@@ -43,19 +35,6 @@ const Header = () => {
             <Home fontSize="large" />
             DocLibrary
         </IconButton>
-          <List
-            component="nav"
-            aria-labelledby="main navigation"
-            className={classes.navDisplayFlex}
-          >
-            {navLinks.map(({ title, path }) => (
-              <a href={path} key={title} className={classes.linkText}>
-                <ListItem button>
-                  <ListItemText primary={title} />
-                </ListItem>
-              </a>
-            ))}
-          </List>
         </Container>
       </Toolbar>
     </AppBar>
