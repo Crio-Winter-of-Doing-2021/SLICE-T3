@@ -44,7 +44,7 @@ async function listFiles(data) {
     url: 'https://digimocker.herokuapp.com/api/docs',
     headers: { 
       'Content-Type': 'application/json',
-      'auth-token': data['auth-token']
+      'auth-token': data['token']['access_token']
     },
     data : JSON.stringify({"email":data['email']})
   };
@@ -55,7 +55,7 @@ async function listFiles(data) {
     axios(config)
     .then(function (response) {
       console.log(response.data);
-      return resolve({ file_list : response.data});
+      return resolve(response.data);
     })
     .catch(function (error) {
       console.log(error);

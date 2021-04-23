@@ -67,7 +67,8 @@
                            "password": {
                               "type" : "string"
                            }
-                        }
+                        },
+                        "required" : ["email","password"]
                      }
                   }
                }
@@ -112,7 +113,8 @@
                            "token" : {
                               "$ref": "#/components/schemas/digiMockerToken"
                            }
-                        }
+                        },
+                        "required" : ["email","password","token"]
                      }
                   }
                }
@@ -334,7 +336,8 @@
                "message": {
                   "type": "string"
                }
-            }
+            },
+            "required" : ["authUrl","message"]
          },
          "gdriveToken": {
             "type": "object",
@@ -354,7 +357,8 @@
                "expiry_date": {
                   "type": "number"
                }
-            }
+            },
+            "required" : ["access_token","refresh_token","scope","token_type","expiry_date"]
          },
          "gdriveClientCredentials": {
             "type": "object",
@@ -368,7 +372,8 @@
                "redirect_uris": {
                   "type": "string"
                }
-            }
+            },
+            "required" : ["client_id","client_secret","redirect_uris"]
          },
          "gdriveFile": {
             "type": "object",
@@ -388,7 +393,8 @@
                "iconLink": {
                   "type": "string"
                }
-            }
+            },
+            "required" : ["kind","id","name","mimeType","iconLink"]
          },
          "gdriveFileList": {
             "type": "object",
@@ -399,7 +405,8 @@
                      "$ref": "#/components/schemas/gdriveFile"
                   }
                }
-            }
+            },
+            "required" : ["files"]
          },
          "s3Credentials": {
             "type" : "object",
@@ -410,7 +417,8 @@
                "SECRET_KEY": {
                   "type": "string"
                }
-            }
+            },
+            "required" : ["ACCESS_KEY","SECRET_KEY"]
          },
          "s3BucketList": {
             "type": "object",
@@ -426,10 +434,12 @@
                         "CreationDate": {
                            "type": "string"
                         }
-                     }
+                     },
+                     "required" : ["Name","CreationDate"]
                   }
                }
-            }
+            },
+            "required" : ["data"]
          },
          "digiMockerToken": {
             "type": "object",
@@ -437,7 +447,8 @@
                "access_token": {
                   "type": "string"
                }
-            }
+            },
+            "required" : ["access_token"]
          },
          "digimockerFile": {
             "type": "object",
@@ -463,7 +474,8 @@
                "__v": {
                   "type": "integer"
                }
-            }
+            },
+            "required" : ["exported","_id","name","email","url","identifier","__v"]
          },
          "digiMockerFileList": {
             "type": "object",
@@ -474,7 +486,8 @@
                      "$ref": "#/components/schemas/digimockerFile"
                   }
                }
-            }
+            },
+            "required" : ["files"]
          },
          "fileTransfer": {
             "type": "object",
@@ -488,7 +501,8 @@
                      "extendedData": {
                         "type": "object"
                         }
-                  }
+                  },
+                  "required" : ["name","extendedData"]
                },
                "destinationConfig": {
                   "type": "object",
@@ -499,9 +513,11 @@
                      "extendedData": {
                         "type": "object"
                      }
-                  }
+                  },
+                  "required" : ["name","extendedData"]
                }
-            }
+            },
+            "required" : ["sourceConfig","destinationConfig"]
          },
          "fileTransferFromLocalStorage": {
             "type": "object",
@@ -513,7 +529,8 @@
                "reqJson": {
                   "type" : "object"
                }
-            }
+            },
+            "required" : ["files","reqJson"]
          },
          "fileTransferResult": {
             "type" : "object",
@@ -521,7 +538,8 @@
                "result" : {
                   "type" : "object"
                }
-            }
+            },
+            "required" : ["result"]
          }
        }
     }
