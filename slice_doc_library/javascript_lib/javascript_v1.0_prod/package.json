@@ -1,7 +1,7 @@
 {
   "name": "docxlib_js",
   "version": "1.0.0",
-  "description": "This_is_api_documentation_for_slice_document_library__Team_SLICE___T3",
+  "description": "This package can be used to transfer files from one cloud storage service to another.",
   "license": "Unlicense",
   "main": "dist/index.js",
   "scripts": {
@@ -42,5 +42,15 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "homepage": "https://docxlib-backend.herokuapp.com/api-docs/",
+  "keywords": [
+    "docxlib",
+    "docxlib_js",
+    "documents",
+    "doctransfer",
+    "google drive doc",
+    "s3 bucket doc"
+  ],
+  "author" : "Preeti Swati & Sahil Rajpal"
 }
