@@ -270,7 +270,6 @@ export default function ListSelectedFiles({ rows}) {
 
 
   function transferSelectedFiles(urlName) {
-    console.log('Inside transfer function')
     const fileUrl = urlName.split("::")[0]
     const fileName = urlName.split("::")[1]
     console.log('URL:', fileUrl, "Name:", fileName)
