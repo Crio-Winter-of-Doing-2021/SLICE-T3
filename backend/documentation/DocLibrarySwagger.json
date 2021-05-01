@@ -8,7 +8,7 @@
     "info": {
        "description": "This is api documentation for slice document library. Team `SLICE - T3`",
        "version": "1.0.0",
-       "title": "Slice Doc Library - T3"
+       "title": "docxlib_js"
     },
     "tags": [
        {
