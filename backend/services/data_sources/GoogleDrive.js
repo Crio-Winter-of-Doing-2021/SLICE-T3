@@ -58,8 +58,6 @@ async function downloadFile(ConfigObject) {
         res.data.on("data", (e) => buf.push(e));
         res.data.on("end", () => {
           const buffer = Buffer.concat(buf);
-          console.log(buffer);
-          // fs.writeFileSync('sample.pdf',buffer); // can be used to convert to file
           return resolve(buffer.toString('base64'));
         });
       }
