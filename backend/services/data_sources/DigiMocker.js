@@ -1,5 +1,4 @@
 var axios = require('axios');
-var unirest = require('unirest');
 var request = require('request').defaults({ encoding: null });
 
 function authorize() {
