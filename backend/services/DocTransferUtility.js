@@ -23,7 +23,7 @@ async function docTransfer(sourceConfig, destinationConfig, files){
     return new Promise((resolve,reject) => {
         downloadFile(sourceConfig.extendedData)
         .then(fileDataBase64 =>{
-            console.log(fileDataBase64);
+            console.log("received file base64, uploading to destination..");
             uploadFile(fileDataBase64,destinationConfig.extendedData)
             .then(response => resolve(response))
             .catch(error => reject(error));
