@@ -1,6 +1,6 @@
 {
   "name": "docxlib_js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "This package can be used to transfer files from one cloud storage service to another.",
   "license": "Unlicense",
   "main": "dist/index.js",
@@ -52,5 +52,5 @@
     "google drive doc",
     "s3 bucket doc"
   ],
-  "author" : "Preeti Swati & Sahil Rajpal"
+  "author": "Preeti Swati, Sahil Rajpal"
 }
